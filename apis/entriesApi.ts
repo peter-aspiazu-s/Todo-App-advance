@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 const entriesApi = axios.create({
-    baseURL: '/api'
+    baseURL: process.env.NODE_ENV === 'production' ? 'https://todo-app-advance.vercel.app/api' : '/api' 
 })
 
 

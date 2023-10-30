@@ -8,8 +8,6 @@ interface SeedEntry {
     createdAt: number;
 }
 
-
-
 export const seedData: SeedData = {
     entries: [
         {

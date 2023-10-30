@@ -76,6 +76,4 @@ const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => 
     // entryToUpdate.status = status;
     // await entryToUpdate.save();
 
-
-
 }
