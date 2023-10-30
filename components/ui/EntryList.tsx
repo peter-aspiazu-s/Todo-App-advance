@@ -6,7 +6,7 @@ import { EntriesContext } from '../../context/entries';
 import { UIContext } from '../../context/ui';
 
 import { EntryStatus } from '../../interfaces';
-import { EntryCard } from './';
+import { EntryCard } from './EntryCard';
 
 import styles from './EntryList.module.css';
 

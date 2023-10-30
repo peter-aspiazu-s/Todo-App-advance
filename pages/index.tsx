@@ -1,10 +1,10 @@
-import type { NextPage } from 'next';
 import { Card, CardContent, CardHeader, Grid } from '@mui/material';
 
 import { Layout } from '../components/layouts';
-import { EntryList, NewEntry } from '../components/ui';
+import { EntryList } from '../components/ui/EntryList';
+import { NewEntry } from '../components/ui/NewEntry';
 
-const HomePage: NextPage = () => {
+const HomePage = () => {
 
   // console.log(process.env.NEXT_PUBLIC_CLIENT_KEY);
   // console.log(process.env.SECRET_KEY);

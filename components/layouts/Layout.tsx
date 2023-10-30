@@ -2,7 +2,8 @@ import { FC } from 'react';
 import Head from 'next/head';
 
 import { Box } from '@mui/material';
-import { Navbar, Sidebar } from '../ui';
+import { Navbar } from '../ui/Navbar';
+import { Sidebar } from '../ui/Sidebar';
 
 
 interface Props {
