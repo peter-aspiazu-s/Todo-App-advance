@@ -1,5 +1,6 @@
 import { FC, useContext, useMemo, DragEvent } from 'react';
-import { List, Paper } from '@mui/material';
+import List from '@mui/material/List';
+import Paper from '@mui/material/Paper';
 
 import { EntriesContext } from '../../context/entries';
 import { UIContext } from '../../context/ui';

@@ -1,6 +1,10 @@
 import { DragEvent, FC, useContext } from 'react';
 import { useRouter } from 'next/router';
-import { Card, CardActionArea, CardActions, CardContent, Typography } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 
 import { UIContext } from '../../context/ui/UIContext';
 import { Entry } from '../../interfaces';
