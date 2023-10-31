@@ -165,8 +165,6 @@ export const EntryPage:FC<Props> = ({ entry }) => {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     
     const { id } = params as { id: string };
-
-    console.log(id);
     
     const entry = await dbEntries.getEntryById( id );
 

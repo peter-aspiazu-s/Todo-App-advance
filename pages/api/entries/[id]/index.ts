@@ -24,14 +24,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
 const getEntry = async (id: string, res: NextApiResponse<Data>) => {
   const entryRef = doc(db, 'entries', id);
-
+  
   try {
     const entrySnapshot = await getDoc(entryRef);
     if (!entrySnapshot.exists()) {
       return res.status(400).json({ message: 'No hay entrada con ese ID: ' + id });
     }
+    const entryData = entrySnapshot.data() as IEntry;
+    console.log(entryData);
 
-    return res.status(200).json(entrySnapshot.data());
+    return res.status(200).json(entryData);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Algo salió mal, revisa la consola del servidor' });
