@@ -1,10 +1,10 @@
-
+import { Timestamp } from 'firebase/firestore';
 
 
 export interface Entry {
-    _id: string;
+    id: string;
     description: string;
-    createdAt: number;
+    createdAt: string;
     status: EntryStatus;
 }
 

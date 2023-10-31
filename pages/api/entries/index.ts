@@ -1,7 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { db } from '../../../database';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { db } from '../../../database/firebase';
+import { collection, getDocs, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { Entry, IEntry } from '../../../models';
-
+import { EntryStatus } from '../../../interfaces';
 
 
 type Data = 
@@ -24,41 +25,53 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
     }
 }
 
+const getEntries = async (res: NextApiResponse<Data>) => {
+    try {
+        const collectionRef = collection(db, 'entries');
+        const querySnapshot = await getDocs(collectionRef);
+        
+        // const entries = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-const getEntries = async( res: NextApiResponse<Data> ) => {
-
-    await db.connect();
-    const entries = await Entry.find().sort({ createdAt: 'ascending' });
-    // await db.disconnect();
-
-    return res.status(200).json( entries );
-
+        const entries = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            // Convierte createdAt a un formato de fecha deseado aquí
+            data.createdAt = data.createdAt.toDate().toISOString(); // O al formato que prefieras
+            return { ...data, id: doc.id };
+        });
+        
+        return res.status(200).json(entries);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Algo salió mal, revisa la consola del servidor' });
+    }
 }
 
 
-const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {
 
-
+const postEntry = async (req: NextApiRequest, res: NextApiResponse<
+    { message: string }
+    |
+    {
+        id: string;
+        description: string;
+        createdAt: Timestamp;
+        status: EntryStatus;
+    }
+    >) => {
     const { description = '' } = req.body;
-
-    const newEntry = new Entry({
-        description,
-        createdAt: Date.now(),
-    });
-
+    const status = 'pending';
 
     try {
+        const collectionRef = collection(db, 'entries');
+        const docRef = await addDoc(collectionRef, {
+            description,
+            status,
+            createdAt: serverTimestamp(),
+        });
 
-        await db.connect();
-        await newEntry.save();
-        await db.disconnect();
-
-        return res.status(201).json( newEntry );
-        
+        return res.status(201).json({...docRef, description, status});
     } catch (error) {
-        await db.disconnect();
-        console.log(error);
-        return res.status(500).json({ message: 'Algo salio mal, revisar consola del servidor' });
+        console.error(error);
+        return res.status(500).json({ message: 'Algo salió mal, revisa la consola del servidor' });
     }
-
 }

@@ -1,7 +1,22 @@
 import { ChangeEvent, FC, useMemo, useState, useContext } from 'react';
 import { GetServerSideProps } from 'next'
 
-import { capitalize, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton } from "@mui/material";
+import { format } from 'date-fns';
+
+import { capitalize } from "@mui/material";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import Grid from "@mui/material/Grid";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
 
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
@@ -68,7 +83,8 @@ export const EntryPage:FC<Props> = ({ entry }) => {
                 <Card>
                     <CardHeader 
                         title={`Entrada:`}
-                        subheader={`Creada ${ dateFunctions.getFormatDistanceToNow( entry.createdAt) }`}
+                        // subheader={`Creada ${ dateFunctions.getFormatDistanceToNow( entry.createdAt) }`}
+                        subheader={`Creada ${format(new Date(entry.createdAt), 'dd/MM/yyyy HH:mm')}`}
                     />
 
                     <CardContent>
@@ -149,9 +165,10 @@ export const EntryPage:FC<Props> = ({ entry }) => {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     
     const { id } = params as { id: string };
+
+    console.log(id);
     
     const entry = await dbEntries.getEntryById( id );
-
 
     if ( !entry ) {
         return {
@@ -162,10 +179,14 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
         }
     }
 
+    const entryWithSerializableDate = {
+        ...entry,
+        createdAt: entry.createdAt.toDate().toISOString() // Convertir el campo createdAt a una cadena de fecha
+    };
 
     return {
         props: {
-            entry
+            entry: entryWithSerializableDate
         }
     }
 }

@@ -27,15 +27,39 @@ export const EntriesProvider:FC = ({ children }) => {
     const addNewEntry = async( description: string ) => {
 
         const { data } = await entriesApi.post<Entry>('/entries', { description });
-        dispatch({ type: '[Entry] Add-Entry', payload: data });
+        // dispatch({ type: '[Entry] Add-Entry', payload: data });
+
+        await refreshEntries();
+        
+        if (data.id) {
+            console.log('desde addNewEntry ', data);
+            // Obtener el ID generado por Firestore
+            const newEntry = {
+                id: data.id,
+                description: data.description,
+                status: data.status,
+                createdAt: ''
+            };
+    
+            // Formatear la fecha antes de agregarla
+            const createdAtDate = new Date(data.createdAt);
+            const formattedCreatedAt = createdAtDate.toISOString();
+            newEntry.createdAt = formattedCreatedAt;
+    
+            dispatch({ type: '[Entry] Add-Entry', payload: newEntry });
+        }
 
     }
 
-    const updateEntry = async( { _id, description, status }: Entry, showSnackbar = false ) => {
+    const updateEntry = async( { id, description, status }: Entry, showSnackbar = false ) => {
         try {
-            const { data } = await entriesApi.put<Entry>(`/entries/${ _id }`, { description, status });
+            const { data } = await entriesApi.put<Entry>(`/entries/${ id }`, { description, status });
+            
+            await refreshEntries();
+
             dispatch({ type: '[Entry] Entry-Updated', payload: data });
             
+
             if ( showSnackbar )
                 enqueueSnackbar('Entrada actualizada', {
                     variant: 'success',

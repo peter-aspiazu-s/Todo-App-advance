@@ -1,16 +1,27 @@
-import { isValidObjectId } from 'mongoose';
-import { Entry, IEntry } from '../models';
-import { db } from './';
+import { doc, getDoc } from 'firebase/firestore';
+import {db} from './firebase';
 
 
-export const getEntryById = async( id: string ): Promise<IEntry | null> => {
+export const getEntryById = async( id: string ) => {
 
-    if ( !isValidObjectId(id) ) return null;
+    const entryRef = doc(db, 'entries', id);
 
-    await db.connect();
-    const entry = await Entry.findById(id).lean();
-    await db.disconnect();
-
-    return JSON.parse( JSON.stringify(entry) );
+    try {
+        const entrySnapshot = await getDoc(entryRef);
+        
+        if (!entrySnapshot.exists()) {
+          return null;
+        }
+    
+        const entryData = entrySnapshot.data();
+    
+        // Agrega el id al objeto de datos
+        entryData.id = entrySnapshot.id;
+    
+        return entryData;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
 
 }

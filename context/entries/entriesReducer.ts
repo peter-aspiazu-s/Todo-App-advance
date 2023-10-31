@@ -12,16 +12,17 @@ export const entriesReducer = ( state: EntriesState, action: EntriesActionType )
 
    switch (action.type) {
       case '[Entry] Add-Entry':
+         // console.log('desde reducer ', action.payload)
          return {
             ...state,
             entries: [ ...state.entries, action.payload ]
           }
 
-      case '[Entry] Entry-Updated':
+      case '[Entry] Entry-Updated': 
           return {
              ...state,
              entries: state.entries.map( entry => {
-               if ( entry._id === action.payload._id ) {
+               if ( entry.id === action.payload.id ) {
                   entry.status = action.payload.status;
                   entry.description = action.payload.description;
                }

@@ -18,13 +18,13 @@ export const Navbar = () => {
   return (
       <AppBar position='sticky'>
           <Toolbar>
-              <IconButton 
+              {/* <IconButton 
                 size='large'
                 edge="start"
                 onClick={ openSideMenu }
               >
                   <MenuOutlinedIcon />
-              </IconButton>
+              </IconButton> */}
 
               <NextLink href="/" passHref>
                 <Link underline='none' color="white">

@@ -22,7 +22,7 @@ export const NewEntry = () => {
         setInputValue( event.target.value );
     }
 
-    const onSave = () => {
+    const handleSave = () => {
 
         if ( inputValue.length === 0 ) return;
 
@@ -68,7 +68,7 @@ export const NewEntry = () => {
                             variant='outlined'
                             color='secondary'
                             endIcon={ <SaveOutlinedIcon /> }
-                            onClick={ onSave }
+                            onClick={ handleSave }
                         >
                             Guardar
                         </Button>

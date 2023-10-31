@@ -28,11 +28,16 @@ export const EntryList:FC<Props> = ({ status }) => {
 
     const onDropEntry = ( event: DragEvent<HTMLDivElement> ) => {
         const id = event.dataTransfer.getData('text');
+
+        // console.log(event.dataTransfer.getData('text/plain'));
         
-        const entry = entries.find( e => e._id === id )!;
-        entry.status = status;
-        updateEntry( entry );
-        endDragging();
+        const entry = entries.find( e => e.id === id )!;
+        if (entry) {
+            // Verifica que entry no sea undefined
+            entry.status = status;
+            updateEntry(entry);
+            endDragging();
+        }
     }
 
       
@@ -48,7 +53,7 @@ export const EntryList:FC<Props> = ({ status }) => {
                 <List sx={{ opacity: isDragging ? 0.2 : 1, transition: 'all .3s' }}> 
                     {
                         entriesByStatus.map( entry => (
-                            <EntryCard key={ entry._id } entry={ entry } />
+                            <EntryCard key={ entry.id } entry={ entry } />
                         ))
                     }
                 </List>

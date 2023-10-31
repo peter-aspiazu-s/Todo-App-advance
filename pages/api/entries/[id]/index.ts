@@ -1,79 +1,61 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { db } from '../../../../database';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import {db} from '../../../../database/firebase';
+import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Entry, IEntry } from '../../../../models';
 
-type Data = 
-| { message: string } 
-| IEntry
+type Data =
+  | { message: string }
+  | IEntry;
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+  const { id } = req.query as { id: string };
 
-    // const { id } = req.query;
+  switch (req.method) {
+    case 'PUT':
+      return updateEntry(id, req, res);
 
-    // if ( !mongoose.isValidObjectId( id ) ) {
-    //     return res.status(400).json({ message: 'El id no es válido ' + id })
-    // }
-    
-    switch ( req.method ) {
-        case 'PUT':
-            return updateEntry( req, res );
+    case 'GET':
+      return getEntry(id, res);
 
-        case 'GET':
-            return getEntry( req, res );
-
-            
-        default:
-            return res.status(400).json({ message: 'Método no existe ' + req.method });
-    }
-
+    default:
+      return res.status(400).json({ message: 'Método no existe ' + req.method });
+  }
 }
 
-const getEntry = async( req: NextApiRequest, res: NextApiResponse ) => {
-    
-    const { id } = req.query;
+const getEntry = async (id: string, res: NextApiResponse<Data>) => {
+  const entryRef = doc(db, 'entries', id);
 
-    await db.connect();
-    const entryInDB = await Entry.findById( id );
-    await db.disconnect();
-
-    if ( !entryInDB ) {
-        return res.status(400).json({ message: 'No hay entrada con ese ID: ' + id })
+  try {
+    const entrySnapshot = await getDoc(entryRef);
+    if (!entrySnapshot.exists()) {
+      return res.status(400).json({ message: 'No hay entrada con ese ID: ' + id });
     }
 
-    return res.status(200).json( entryInDB );
-}
+    return res.status(200).json(entrySnapshot.data());
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Algo salió mal, revisa la consola del servidor' });
+  }
+};
 
+const updateEntry = async (id: string, req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const entryRef = doc(db, 'entries', id);
 
+  const { description, status } = req.body as IEntry;
 
-const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {
-    
-    const { id } = req.query;
-
-    await db.connect();
-
-    const entryToUpdate = await Entry.findById( id );
-
-    if ( !entryToUpdate ) {
-        await db.disconnect();
-        return res.status(400).json({ message: 'No hay entrada con ese ID: ' + id })
+  try {
+    const entrySnapshot = await getDoc(entryRef);
+    if (!entrySnapshot.exists()) {
+      return res.status(400).json({ message: 'No hay entrada con ese ID: ' + id });
     }
 
-    const {
-        description = entryToUpdate.description,
-        status = entryToUpdate.status,
-    } = req.body;
+    await updateDoc(entryRef, { description, status });
+    const updatedEntrySnapshot = await getDoc(entryRef);
+    const updatedEntryData = updatedEntrySnapshot.data();
 
-    try {
-        const updatedEntry = await Entry.findByIdAndUpdate( id, { description, status }, { runValidators: true, new: true });
-        await db.disconnect();
-        res.status(200).json( updatedEntry! );
-        
-    } catch (error: any) {
-        await db.disconnect();
-        res.status(400).json({ message: error.errors.status.message });
-    }
-    // entryToUpdate.description = description;
-    // entryToUpdate.status = status;
-    // await entryToUpdate.save();
-
-}
+    return res.status(200).json(updatedEntryData);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Algo salió mal, revisa la consola del servidor' });
+  }
+};
