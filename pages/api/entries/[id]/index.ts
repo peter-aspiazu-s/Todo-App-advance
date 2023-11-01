@@ -53,9 +53,14 @@ const updateEntry = async (id: string, req: NextApiRequest, res: NextApiResponse
 
     await updateDoc(entryRef, { description, status });
     const updatedEntrySnapshot = await getDoc(entryRef);
-    const updatedEntryData = updatedEntrySnapshot.data();
+    const updatedEntryData = updatedEntrySnapshot.data() as IEntry;
+
+    if (!updatedEntryData) {
+      return res.status(404).json({ message: 'No se pudo encontrar la entrada actualizada' });
+    }
 
     return res.status(200).json(updatedEntryData);
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Algo salió mal, revisa la consola del servidor' });

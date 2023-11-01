@@ -36,7 +36,13 @@ const getEntries = async (res: NextApiResponse<Data>) => {
             const data = doc.data();
             // Convierte createdAt a un formato de fecha deseado aquí
             data.createdAt = data.createdAt.toDate().toISOString(); // O al formato que prefieras
-            return { ...data, id: doc.id };
+            // return { ...data, id: doc.id };
+            return {
+                id: doc.id,
+                description: data.description,
+                createdAt: data.createdAt,
+                status: data.status,
+            };
         });
         
         return res.status(200).json(entries);
@@ -54,7 +60,7 @@ const postEntry = async (req: NextApiRequest, res: NextApiResponse<
     {
         id: string;
         description: string;
-        createdAt: Timestamp;
+        createdAt: any;
         status: EntryStatus;
     }
     >) => {
@@ -69,7 +75,11 @@ const postEntry = async (req: NextApiRequest, res: NextApiResponse<
             createdAt: serverTimestamp(),
         });
 
-        return res.status(201).json({...docRef, description, status});
+        const id = docRef.id; // Obtener el ID generado por Firestore
+        const createdAt = new Date().toISOString(); // Establecer la marca de tiempo actual
+
+        return res.status(201).json({ id, description, createdAt, status });
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Algo salió mal, revisa la consola del servidor' });

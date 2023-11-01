@@ -32,21 +32,7 @@ export const EntriesProvider:FC = ({ children }) => {
         await refreshEntries();
         
         if (data.id) {
-            console.log('desde addNewEntry ', data);
-            // Obtener el ID generado por Firestore
-            const newEntry = {
-                id: data.id,
-                description: data.description,
-                status: data.status,
-                createdAt: ''
-            };
-    
-            // Formatear la fecha antes de agregarla
-            const createdAtDate = new Date(data.createdAt);
-            const formattedCreatedAt = createdAtDate.toISOString();
-            newEntry.createdAt = formattedCreatedAt;
-    
-            dispatch({ type: '[Entry] Add-Entry', payload: newEntry });
+            dispatch({ type: '[Entry] Add-Entry', payload: data });
         }
 
     }
