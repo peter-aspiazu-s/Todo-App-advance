@@ -27,9 +27,6 @@ export const EntriesProvider:FC = ({ children }) => {
     const addNewEntry = async( description: string ) => {
 
         const { data } = await entriesApi.post<Entry>('/entries', { description });
-        // dispatch({ type: '[Entry] Add-Entry', payload: data });
-
-        await refreshEntries();
         
         if (data.id) {
             dispatch({ type: '[Entry] Add-Entry', payload: data });
